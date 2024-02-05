@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.18.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.3",
@@ -20,7 +21,10 @@
     "resize-observer-polyfill": "^1.5.1",
     "sass": "^1.70.0",
     "tailwind-merge": "^2.2.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "viem": "^1.21.4",
+    "wagmi": "^1.4.13",
+    "connectkit": "1.6.0"
   },
   "devDependencies": {
     "@types/node": "^20",

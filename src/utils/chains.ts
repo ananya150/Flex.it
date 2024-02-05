@@ -1,0 +1,3 @@
+export const BASE_KEY = process.env.NEXT_PUBLIC_BASEKEY;
+
+export const WALLET_CONNECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
