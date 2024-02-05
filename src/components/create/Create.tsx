@@ -2,13 +2,41 @@
 import React,{useState, useEffect, useRef} from 'react'
 import { Tabs } from './Tabs';
 import { WavyBackground } from './WavyBackground';
-import { Link, PartyPopper } from 'lucide-react';
+import { Link, PartyPopper, Image } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { useModal } from 'connectkit';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+  } from "@/components/ui/alert-dialog";
+  import {
+    Tabs as ShadTabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+  } from "@/components/ui/tabs";
+  import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+  } from "@/components/ui/card";
+  import { Input } from "@/components/ui/input"
+  import { Label } from "@/components/ui/label"
+  import { Button } from "@/components/ui/button"
 
 const CreateLink = () => {
 
-    const [activeTab, setActiveTab] = useState(0);
+    const [activeTab, setActiveTab] = useState(1);
     const [image, setImage] = useState("url(/scene.jpg)");
     const [message, setMessage] = useState('');
     const [amount, setAmount] = useState('');
@@ -16,9 +44,12 @@ const CreateLink = () => {
     const [connected , setConnected] = useState(false);
     const [balance, setBalance] = useState('0.0');
     const [isDark, setIsDark] = useState(false);
+    const [imageLink, setImageLink] = useState('');
+    const [insertedImage, setInsertedImage] = useState<any>(null)
 
     const inputRef1 = useRef(null);
-    const inputRef2 = useRef(null)
+    const inputRef2 = useRef(null);
+
 
     useEffect(() => {
         setConnected(isConnected);
@@ -65,9 +96,20 @@ const CreateLink = () => {
         }
     }
 
+    const handleInsertLink = () => {
+        setImage(`url(${imageLink})`);
+        setImageLink('');
+    }
+
+    const handleInsetImage = () => {
+        console.log(URL.createObjectURL(insertedImage))
+        setImage(`url(${URL.createObjectURL(insertedImage)})`);
+        setInsertedImage('')
+    }
+
     useEffect(() => {
 
-    },[amount])
+    },[amount, image])
 
     return (
         <div className='flex w-full justify-evenly'>
@@ -113,16 +155,72 @@ const CreateLink = () => {
                                 <Link className={`${isDark ? 'text-black' : 'text-gray-400'} w-4 h-4`} />
                                 <span className={`font-semibold ${isDark ? 'text-black' : 'text-gray-400'} text-[18px] font-sat`}>flex.it</span>                    
                             </div>
-                            {/* @ts-ignore */}
                             <div onClick={handleEnterMessage} className={`absolute bottom-[20px] z-40 mx-[20px] w-[290px] px-3 ${isDark ? 'bg-black': 'bg-white'} rounded-xl h-[50px] flex items-center space-x-4 overflow-hidden`}>
                                 <div className={`h-[30px] w-[30px] rounded-full ${isDark ? 'bg-[#0767EB]': 'bg-[#EA52A2] ' } flex flex-col justify-center items-center`}>
                                     <PartyPopper className='w-4 h-4 text-white' />
                                 </div>
                                 <input value={message} onChange={(e) => {setMessage(e.target.value)}} placeholder='Enter a small message!' ref={inputRef2} className={`${isDark ? 'text-white': 'text-black'} font-bold font-sans outline-none border-none bg-transparent w-[220px] text-[15px]`} ></input>
                             </div>
-                            <div className='absolute -left-[190px] z-10 top-[175px] bg-white w-[170px] h-[40px] cursor-pointer rounded-xl flex flex-col justify-center items-center '>
-                                <span className='font-medium text-[12px]'>Upload background image</span>
-                            </div>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <div className='absolute -left-[190px] z-10 top-[175px] bg-white w-[170px] h-[40px] cursor-pointer rounded-xl flex flex-col justify-center items-center '>
+                                        <span className='font-medium text-[12px]'>Upload background image</span>
+                                    </div>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogDescription className='flex justify-center'>
+                                            <ShadTabs defaultValue="upload" className="w-[400px]">
+                                                <TabsList className="grid w-full grid-cols-2">
+                                                    <TabsTrigger value="upload">Upload Image</TabsTrigger>
+                                                    <TabsTrigger value="insert">Insert Link</TabsTrigger>
+                                                </TabsList>
+                                                <TabsContent value="upload">
+                                                    <Card>
+                                                        <CardHeader>
+                                                            <CardTitle>Upload Image Here</CardTitle>
+                                                        </CardHeader>
+                                                        {/*  @ts-ignore */}
+                                                        <CardContent className="space-y-2 h-[200px] flex flex-col justify-center items-center  ">
+                                                            <Image className='w-9 h-9 text-gray-500' />
+                                                            <input
+                                                                type="file"
+                                                                name="myImage"
+                                                                className='ml-20'
+                                                                onChange={(event) => {
+                                                                    // @ts-ignore
+                                                                    setInsertedImage(event.target.files[0]);
+                                                                }}
+                                                            />
+                                                        </CardContent>
+                                                        <CardFooter className='flex justify-end px-5 space-x-5'>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction onClick={handleInsetImage}>Confirm</AlertDialogAction>
+                                                        </CardFooter>
+                                                    </Card>
+                                                </TabsContent>
+                                                <TabsContent value="insert">
+                                                    <Card>
+                                                        <CardHeader>
+                                                            <CardTitle>Insert Link Here</CardTitle>
+                                                        </CardHeader>
+                                                        <CardContent className="space-y-2 h-[200px] flex flex-col justify-center">
+                                                            <div className="space-y-1">
+                                                                <Input value={imageLink} onChange={(e) => {setImageLink(e.target.value)}} id="current"  />
+                                                            </div>
+                                                        </CardContent>
+                                                        <CardFooter className='flex justify-end px-5 space-x-5'>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction onClick={handleInsertLink}>Confirm</AlertDialogAction>
+                                                        </CardFooter>
+                                                    </Card>
+                                                </TabsContent>
+                                            </ShadTabs>
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                </AlertDialogContent>
+                            </AlertDialog>
+
                             <div className='absolute arrow-right z-10 top-[175px] -left-[30px] cursor-pointer'></div>
                             <div onClick={(e) => handleColorChange(e, "black")} className='top-[180px] -right-[50px] absolute w-[30px] h-[30px] rounded-full border-[1px] border-white bg-black' />
                             <div onClick={(e) => handleColorChange(e, "white")} className='top-[230px] -right-[50px] absolute w-[30px] h-[30px] rounded-full bg-white' />
