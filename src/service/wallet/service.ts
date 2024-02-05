@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
-import {PROVIDER, gho} from './constants'
-import { sendGho } from "./userop/transfer";
+import {PROVIDER, usdc} from './constants'
+import { sendUsdc } from "./userop/transfer";
 
-import { getKeyPairFromHash, getGhoBalance } from "./utils";
+import { getKeyPairFromHash, getUSDCBalance } from "./utils";
 
 export class AccountService {
     private linkHash: string;
@@ -27,14 +27,14 @@ export class AccountService {
     }
 
     public async getBalance() {
-        const balance = await getGhoBalance(this.address);
+        const balance = await getUSDCBalance(this.address);
         return balance;
     }
 
     public async transferGho(claimerAddress: string) {
-        const balance = await gho.balanceOf(this.address);
+        const balance = await usdc.balanceOf(this.address);
         const signer = new ethers.Wallet(this.privKey, PROVIDER);
-        const hash = await sendGho(signer, this.address, claimerAddress, `${balance}`);
+        const hash = await sendUsdc(signer, this.address, claimerAddress, `${balance}`);
         return hash;
     }
 

@@ -1,13 +1,13 @@
 import { ethers } from "ethers";
-import { extractorInterface, EXTRACTORADDRESS, gho } from "../constants";
+import { extractorInterface, EXTRACTORADDRESS, usdc } from "../constants";
 import { buildOp } from "./account";
 
-export const sendGho = async (signer: ethers.Wallet, signerAddress: string, claimerAddress: string, amount: string) => {
+export const sendUsdc = async (signer: ethers.Wallet, signerAddress: string, claimerAddress: string, amount: string) => {
 
     const deadline = ethers.constants.MaxUint256;
 
     // transfering with account
-    const {v,r,s} = await getPermitSignature(signer , gho , EXTRACTORADDRESS , amount , deadline);
+    const {v,r,s} = await getPermitSignature(signer , usdc , EXTRACTORADDRESS , amount , deadline);
     console.log("Permit signature done")
     
     const extractcd = getExtractorCallData(signerAddress, claimerAddress, amount, deadline, v, r, s, amount);
@@ -23,7 +23,7 @@ export async function getPermitSignature(signer: ethers.Wallet, token: ethers.Co
   const [nonce, name, version, chainId] = await Promise.all([
     await token.nonces(signer.address),
     await token.name(),
-    "1",
+    "2",
     signer.getChainId(),
   ])
 

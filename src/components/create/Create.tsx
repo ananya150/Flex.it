@@ -2,7 +2,8 @@
 import React,{useState, useEffect, useRef} from 'react'
 import { Tabs } from './Tabs';
 import { WavyBackground } from './WavyBackground';
-import { Link, PartyPopper, Image } from 'lucide-react';
+import { Link, PartyPopper, Image, AlertCircle, } from 'lucide-react';
+import { ReloadIcon } from "@radix-ui/react-icons"
 import { useAccount } from 'wagmi';
 import { useModal } from 'connectkit';
 import {
@@ -11,9 +12,7 @@ import {
     AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
-    AlertDialogFooter,
     AlertDialogHeader,
-    AlertDialogTitle,
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog";
   import {
@@ -25,18 +24,19 @@ import {
   import {
     Card,
     CardContent,
-    CardDescription,
     CardFooter,
     CardHeader,
     CardTitle,
   } from "@/components/ui/card";
   import { Input } from "@/components/ui/input"
-  import { Label } from "@/components/ui/label"
-  import { Button } from "@/components/ui/button"
+  import { generateRandomKeyPair, sendUsdcTransaction } from '@/service/wallet/utils';
+  import toast from 'react-hot-toast';
+  import { useSendTransaction, useWaitForTransaction } from 'wagmi' 
+  import { Button } from '../ui/button';
 
 const CreateLink = () => {
 
-    const [activeTab, setActiveTab] = useState(1);
+    const [activeTab, setActiveTab] = useState(0);
     const [image, setImage] = useState("url(/scene.jpg)");
     const [message, setMessage] = useState('');
     const [amount, setAmount] = useState('');
@@ -45,7 +45,21 @@ const CreateLink = () => {
     const [balance, setBalance] = useState('0.0');
     const [isDark, setIsDark] = useState(false);
     const [imageLink, setImageLink] = useState('');
-    const [insertedImage, setInsertedImage] = useState<any>(null)
+    const [insertedImage, setInsertedImage] = useState<any>(null);
+    const [loading, setLoading] = useState(false);
+    const [toastId, setToastId] = useState<any>(null);
+
+    const [newAddress, setNewAddress] = useState('');
+    const [hashLink, setHashLink] = useState('');
+
+    const {  data , sendTransaction, isError } = useSendTransaction() 
+    const {
+        data: txReceipt,
+        error: txError,
+        isLoading: txLoading,
+        isSuccess,
+        status
+      } = useWaitForTransaction({ confirmations: 1, hash: data?.hash });
 
     const inputRef1 = useRef(null);
     const inputRef2 = useRef(null);
@@ -107,9 +121,139 @@ const CreateLink = () => {
         setInsertedImage('')
     }
 
+    const handleButtonClick = async () => {
+
+        setLoading(true);
+
+        // if(parseFloat(amount) > parseFloat(balance)){
+        //     invalidAmountToast()
+        //     setLoading(false)             
+        //     return;
+        // }
+        // generate hash and address for link
+        const newPair = await generateRandomKeyPair()
+        setNewAddress(newPair.address)
+        setHashLink(newPair.hash);
+        const tx = await sendUsdcTransaction(newPair.address, amount);
+        console.log(newPair)
+        console.log(tx)
+        sendTransaction(tx as any);
+    }
+
+    useEffect(() => {
+        if(isError){
+            toast.error("Transaction Rejected");
+            setLoading(false)
+            return;
+        }
+        if(status === "loading"){
+            const tId = toast.loading('Waiting for transaction');
+            setToastId(tId);
+            return;
+        }
+        if(status === "success"){
+            handleTransactionConfirmation()
+        }
+        if(status === "error"){
+            toast.dismiss(toastId);
+            toast.error("Transaction Failed");
+            setLoading(false)
+            return;
+        }
+
+    }, [status, isError])
+
+
     useEffect(() => {
 
     },[amount, image])
+
+    const handleTransactionConfirmation = async () => {
+        toast.dismiss(toastId);
+        toast.success("Transaction Confirmed");
+
+        // let data;
+        // if(type === 0){
+        //     data = {
+        //         type: 0,
+        //         amount: amount,
+        //         message: '',
+        //         image: '',
+        //         imageDescription: '',
+        //         link: hashLink,
+        //         toAddress: newAddress,
+        //         isClaimed: false
+        //     }
+        // }else if(type === 1){
+        //     data = {
+        //         type: 1,
+        //         amount: amount,
+        //         message: message,
+        //         image: '',
+        //         imageDescription: '',
+        //         link: hashLink,
+        //         toAddress: newAddress,
+        //         isClaimed: false
+        //     }
+        // }else if(type === 2){
+        //     data = {
+        //         type: 2,
+        //         amount: amount,
+        //         message: '',
+        //         image: image,
+        //         imageDescription: imageDescription,
+        //         link: hashLink,
+        //         toAddress: newAddress,
+        //         isClaimed: false
+        //     }
+        // }
+        // addLinkToStorage(data);
+        setLoading(false);
+        //@ts-ignore
+        // delete data?.link
+        // try{
+        //     await db.set(newAddress, data);
+        // }catch(e){
+        //     console.log("Error occured while saving");
+        // }
+        // router.push(`/create/${newAddress}`)
+        return;
+    }
+
+
+    const invalidAmountToast = () => {
+        toast.custom((t: any) => (
+            <div
+              className={`${
+                t.visible ? 'animate-enter' : 'animate-leave'
+              } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+            >
+              <div className="flex-1 w-0 p-4">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 pt-0.5">
+                    <AlertCircle className='text-yellow-700' />
+                  </div>
+                  <div className="ml-3 flex-1">
+                    <p className="text-sm font-medium text-gray-900">
+                      Invalid Amount
+                    </p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Max {balance}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex border-l border-gray-200">
+                <button
+                  onClick={() => toast.dismiss(t.id)}
+                  className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )) 
+    }
 
     return (
         <div className='flex w-full justify-evenly'>
@@ -231,9 +375,19 @@ const CreateLink = () => {
             <div className='flex flex-col justify-center'>
                 {
                     connected ?
-                    <div className='w-[130px] mt-40 bg-white h-[45px] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
-                        <span className='font-medium transition-[1s] text-[18px]'>Create Link</span>
-                    </div>
+                    (
+                        loading ?
+                        <div>
+                            <div onClick={handleButtonClick} className='w-[130px] mt-40 bg-white h-[45px] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center' >
+                                <ReloadIcon className="h-3 w-3 animate-spin mr-6" />
+                                <span className='font-medium transition-[1s] text-[15px]'>Waiting</span>
+                            </div>
+                        </div>
+                        :
+                        <div onClick={handleButtonClick} className='w-[130px] mt-40 bg-white h-[45px] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
+                            <span className='font-medium transition-[1s] text-[18px]'>Create Link</span>
+                        </div>
+                    )
                         :
                     <div onClick={handleConnectWallet} className='w-[130px] mt-40 bg-white h-[45px] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
                         <span className='font-medium transition-[1s] text-[15px]'>Connect Wallet</span>

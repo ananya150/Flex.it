@@ -2,13 +2,13 @@ import _sodium, { add } from 'libsodium-wrappers-sumo';
 import {entropyToMnemonic, mnemonicToSeedSync} from 'bip39';
 import {hdkey} from 'ethereumjs-wallet';
 import {encode, decode} from 'bs58';
-import { gho } from './constants';
+import { usdc } from './constants';
 import { ethers } from 'ethers';
 
 const DEFAULT_LINK_KEYLENGTH = 20;
 
-export const getGhoBalance = async (address: string) => {
-  const balance = await await gho.balanceOf(address);
+export const getUSDCBalance = async (address: string) => {
+  const balance = await await usdc.balanceOf(address);
   return balance;
 }
 
@@ -73,8 +73,9 @@ export const getKeyPairFromHash = async (hash:string) => {
     return {address, privateKey};
 }
 
-export const sendGhoTransaction = async (address: string, amount: string) => {
-  const tx = await gho.populateTransaction.transfer(address, ethers.utils.parseEther(amount));
+export const sendUsdcTransaction = async (address: string, amount: string) => {
+  const updatedAmount = parseFloat(amount) * 1000000;
+  const tx = await usdc.populateTransaction.transfer(address, updatedAmount);
   return tx;
 }
 
