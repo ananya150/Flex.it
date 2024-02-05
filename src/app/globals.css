@@ -131,3 +131,12 @@
 .no-visible-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+.arrow-right {
+  width: 0; 
+  height: 0; 
+  border-top: 18px solid transparent;
+  border-bottom: 18px solid transparent;
+  
+  border-left: 18px solid white;
+}
