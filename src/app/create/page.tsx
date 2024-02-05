@@ -1,12 +1,15 @@
 import React from 'react'
-import Header from '@/components/claim/Header';
-import Provider from '@/components/claim/Provider';
+import Header from '@/components/create/Header';
+import Provider from '@/components/create/Provider';
+import CreateLink from '@/components/create/Create';
+
 
 const Create = () => {
   return (
     <Provider>
-      <div className='min-h-screen bg-[#0D0D0D]'>
-          <Header />
+      <div className='h-screen overflow-hidden bg-[#0D0D0D]'>
+        <Header />
+        <CreateLink/>
       </div>
     </Provider>
   )
