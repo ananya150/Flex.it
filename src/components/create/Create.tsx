@@ -2,7 +2,7 @@
 import React,{useState, useEffect, useRef} from 'react'
 import { Tabs } from './Tabs';
 import { WavyBackground } from './WavyBackground';
-import { Link, PartyPopper, Image, AlertCircle, } from 'lucide-react';
+import { Link, PartyPopper, Image, AlertCircle, Copy } from 'lucide-react';
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { useAccount } from 'wagmi';
 import { useModal } from 'connectkit';
@@ -32,8 +32,8 @@ import {
   import { generateRandomKeyPair, getUSDCBalance, sendUsdcTransaction, addLinkToStorage } from '@/service/wallet/utils';
   import toast from 'react-hot-toast';
   import { useSendTransaction, useWaitForTransaction } from 'wagmi' 
-  import { Button } from '../ui/button';
   import { db } from '@/utils/db';
+  import QRCode from "react-qr-code";
 
 const CreateLink = () => {
 
@@ -52,6 +52,8 @@ const CreateLink = () => {
 
     const [newAddress, setNewAddress] = useState('');
     const [hashLink, setHashLink] = useState('');
+
+    const [isCreated, setIsCreated] = useState(false)
 
     const {  data , sendTransaction, isError } = useSendTransaction() 
     const {
@@ -126,6 +128,11 @@ const CreateLink = () => {
         setInsertedImage('')
     }
 
+    const copy = () => {
+        navigator.clipboard.writeText(`http://localhost:3000/claim/${hashLink}`);
+        toast.success('Copied')
+      }
+
     const handleButtonClick = async () => {
 
         setLoading(true);
@@ -170,12 +177,12 @@ const CreateLink = () => {
 
 
     useEffect(() => {
-
     },[amount, image])
 
     const handleTransactionConfirmation = async () => {
         toast.dismiss(toastId);
         toast.success("Transaction Confirmed");
+        setIsCreated(true);
 
         let data;
         if(activeTab === 0){
@@ -248,8 +255,8 @@ const CreateLink = () => {
     }
 
     return (
-        <div className='flex w-full justify-evenly'>
-            <div className='flex flex-col items-center px-24'>
+        <div className='flex w-full'>
+            <div className='w-1/2 flex flex-col items-center ml-20'>
                 <div className='mt-[180px] flex items-end ml-3'>
                     <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
                 </div>
@@ -371,26 +378,39 @@ const CreateLink = () => {
                     </div>
                 }
             </div>
-            <div className='flex flex-col justify-center'>
+            <div className='w-1/2 flex flex-col justify-center items-center'>
                 {
-                    connected ?
-                    (
-                        loading ?
-                        <div>
-                            <div onClick={handleButtonClick} className='w-[130px] mt-40 bg-white h-[45px] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center' >
-                                <ReloadIcon className="h-3 w-3 animate-spin mr-6" />
-                                <span className='font-medium transition-[1s] text-[15px]'>Waiting</span>
+                    isCreated ?
+                    <div className='flex flex-col items-center space-y-8 mt-16'>
+                        <QRCode value={`http://localhost:3000/claim/${hashLink}`} className='w-[120px] h-[120px]' />
+                        <div className='flex items-center space-x-2'>
+                            <div className='bg-white px-4 py-2 rounded-xl text-[14px] font-semibold font-sat'>http://localhost:3000/claim/{hashLink}</div>
+                            <div onClick={copy}  className='bg-white rounded-xl p-2 w-fit cursor-pointer'>
+                                <Copy className='text-[#14141B] h-4 w-4' />
                             </div>
                         </div>
-                        :
-                        <div onClick={handleButtonClick} className='w-[130px] mt-40 bg-white h-[45px] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
-                            <span className='font-medium transition-[1s] text-[18px]'>Create Link</span>
+                    </div>
+                    :
+                    (
+                        connected ?
+                        (
+                            loading ?
+                            <div>
+                                <div onClick={handleButtonClick} className='w-[130px] mt-40 bg-white h-[45px] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-not-allowed flex justify-center items-center' >
+                                    <ReloadIcon className="h-3 w-3 animate-spin mr-6" />
+                                    <span className='font-medium transition-[1s] text-[15px]'>Waiting</span>
+                                </div>
+                            </div>
+                            :
+                            <div onClick={handleButtonClick} className='w-[130px] mt-40 bg-white h-[45px] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
+                                <span className='font-medium transition-[1s] text-[18px]'>Create Link</span>
+                            </div>
+                        )
+                            :
+                        <div onClick={handleConnectWallet} className='w-[130px] mt-40 bg-white h-[45px] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
+                            <span className='font-medium transition-[1s] text-[15px]'>Connect Wallet</span>
                         </div>
                     )
-                        :
-                    <div onClick={handleConnectWallet} className='w-[130px] mt-40 bg-white h-[45px] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
-                        <span className='font-medium transition-[1s] text-[15px]'>Connect Wallet</span>
-                    </div>
                 }
             </div>
         </div>
