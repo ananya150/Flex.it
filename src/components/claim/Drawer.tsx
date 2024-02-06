@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { Drawer } from "vaul";
 import { clsx } from "clsx";
 import { Separator } from "@/components/ui/separator";
-import { Wallet, BookUser, Landmark, Link2 } from "lucide-react";
+import { Wallet, BookUser, Landmark, Link2, } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useModal } from 'connectkit';
 import { ethers } from "ethers";
 import { AccountService } from "@/service/wallet/service";
 import toast from "react-hot-toast";
 import { db } from "@/utils/db";
+import { FaGoogle } from "react-icons/fa";
 
 export function ClaimDrawer({
     children,
@@ -35,6 +36,7 @@ export function ClaimDrawer({
 
     const {isConnected, address} = useAccount();
     const {setOpen} = useModal();
+    const leftPosition = (window.innerWidth - 350) / 2;
 
     const handleConnectedWallet = () => {
         if(isConnected){
@@ -61,6 +63,12 @@ export function ClaimDrawer({
             return;
         }
         setSnap("400px");
+    }
+
+    const handleBack = () => {
+        setEnteredAddress('');
+        setIsError(false)
+        setSnap("300px");
     }
 
     const confirmTransfer = () => {
@@ -107,9 +115,9 @@ export function ClaimDrawer({
       <Drawer.Trigger asChild>
         {children}
       </Drawer.Trigger>
-      <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+      <Drawer.Overlay className="fixed inset-0 " />
       <Drawer.Portal>
-        <Drawer.Content className="fixed flex flex-col bg-white border border-gray-200  rounded-[34px] bottom-[5%] left-[38%] right-[38%] h-full  mx-[-1px]">
+        <Drawer.Content className="fixed flex flex-col bg-white border border-gray-200  rounded-[34px] bottom-[5%] w-[350px] h-full z-50" style={{left: leftPosition}}>
           <div
             className={clsx("flex flex-col max-w-md mx-auto w-full p-8", {
               "overflow-y-auto": snap === 1,
@@ -124,20 +132,21 @@ export function ClaimDrawer({
                         <div className="flex flex-col">
                             <div className="flex justify-between">
                                 <span className="text-[20px] font-sat font-medium">Options</span>
-                                {/* <div onClick={() => {setOpen(false)}} className="rounded-full w-[25px] h-[25px] bg-[#f7f8f9] flex justify-center items-center cursor-pointer">
-                                    <span className="text-[18px] font-sat font-semibold text-[#999999]">x</span>
-                                </div> */}
                                 <div/>
                             </div>
                             <Separator className="mt-7 bg-gray-100" />
                             <div className="mt-6 flex flex-col space-y-4">
-                                <div onClick={handleConnectedWallet} className="w-full bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-start items-center px-3 ">
+                                {/* <div onClick={handleConnectedWallet} className="w-full bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-start items-center px-3 ">
                                     <Wallet className="text-black w-5 h-5 mr-4" />
                                     {isConnected ? `To ${address?.slice(0,6)}....${address?.slice(-4)}`: 'Connected Wallet'}
-                                </div>
+                                </div> */}
                                 <div onClick={() => {setEnterAddressPopUp(true)}} className="w-full bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-start items-center px-3 ">
                                     <BookUser className="text-black w-5 h-5 mr-4" />
                                     Ethereum Address
+                                </div>
+                                <div onClick={() => {setEnterAddressPopUp(true)}} className="w-full bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-start items-center px-3 ">
+                                    <FaGoogle className="text-black w-5 h-5 mr-4" />
+                                    Claim with Google
                                 </div>
                                 <div className="w-full cursor-not-allowed bg-[#FEF1F0] text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#FEF1F0] flex justify-between items-center px-3 ">
                                     <div className="flex items-center">
@@ -155,9 +164,18 @@ export function ClaimDrawer({
                                 <span className="text-[20px] font-sat font-medium">Enter Address</span>
                                 <div/>
                             </div>
-                            <Separator className="mt-7 bg-gray-100" />
+                            <Separator className="mt-4 bg-gray-100" />
                             <div className="mt-6 flex flex-col">
-                                <div className="w-full mt-6 bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-start items-center px-3 ">
+                                <div onClick={handleConnectedWallet} className="w-full bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-start items-center px-3 ">
+                                    <Wallet className="text-black w-5 h-5 mr-4" />
+                                    {isConnected ? `To ${address?.slice(0,6)}....${address?.slice(-4)}`: 'Connected Wallet'}
+                                </div>
+                                <div className="w-full mt-3 flex justify-between items-center">
+                                    <Separator className=" bg-gray-100 w-[110px]" />
+                                    <span className="text-gray-400 text-[11px] font-sat">OR</span>
+                                    <Separator className=" bg-gray-100 w-[110px]" />
+                                </div>
+                                <div className="w-full mt-3 bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-start items-center px-3 ">
                                     <Wallet className="text-black w-5 h-5 mr-4" />
                                     <input value={enteredAddress} onChange={(e) => {setEnteredAddress(e.target.value)}} className="w-full bg-[#F7F8F9] outline-none border-none text-[14px] font-light" autoFocus />
                                 </div>
@@ -170,7 +188,7 @@ export function ClaimDrawer({
 
                                     </div>
                                 }
-                                <div className="flex justify-between space-x-2 mt-12">
+                                <div className="flex justify-between space-x-2 mt-3">
                                     <div onClick={() => {
                                         setEnterAddressPopUp(false);
                                         setEnteredAddress('');
@@ -203,7 +221,7 @@ export function ClaimDrawer({
                         <div onClick={() => {setSelectedChain(1)}} className={`w-full ${selectedChain === 1 ? 'border border-[#4eaffe]': 'border border-[#F7F8F9]'} bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-between items-center px-3 `}>
                             <div className="flex items-center">
                                 <Wallet className="text-black w-5 h-5 mr-4" />
-                                Ethereum Sepolia
+                                Base
                             </div>
                             <div className="text-[12px] text-[#4eaffe]">
                                 ~ 30 sec
@@ -212,7 +230,7 @@ export function ClaimDrawer({
                         <div onClick={() => {setSelectedChain(2)}} className={`w-full ${selectedChain === 2 ? 'border border-[#4eaffe]': 'border border-[#F7F8F9]'} bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-between items-center px-3 `}>
                             <div className="flex items-center">
                                 <BookUser className="text-black w-5 h-5 mr-4" />
-                                Arbitrum Sepolia
+                                Polygon
                             </div>
                             <div className="text-[12px] text-[#4eaffe]">
                                 ~ 20 min
@@ -220,11 +238,11 @@ export function ClaimDrawer({
                         </div>
                     </div>
                     <div className="flex justify-between space-x-2 mt-8">
-                        <Drawer.Close className="w-1/2 ">
+                        <div onClick={handleBack} className="w-1/2 ">
                             <div className="w-full cursor-pointer bg-[#f0f2f4] rounded-2xl flex justify-center px-2 py-2">
-                                <span className="text-[18px] font-medium ">Cancel</span>
+                                <span className="text-[18px] font-medium ">Back</span>
                             </div>
-                        </Drawer.Close>
+                        </div>
                         {
                             selectedChain === 0 ?
                             <div className={`w-1/2 bg-[#4eaffe] rounded-2xl flex justify-center px-2 py-2 ${selectedChain === 0 ? 'cursor-not-allowed': 'cursor-pointer'}`}>
