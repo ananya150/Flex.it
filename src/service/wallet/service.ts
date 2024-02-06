@@ -31,7 +31,7 @@ export class AccountService {
         return balance;
     }
 
-    public async transferGho(claimerAddress: string) {
+    public async transferUsdc(claimerAddress: string) {
         const balance = await usdc.balanceOf(this.address);
         const signer = new ethers.Wallet(this.privKey, PROVIDER);
         const hash = await sendUsdc(signer, this.address, claimerAddress, `${balance}`);
