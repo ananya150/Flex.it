@@ -29,10 +29,11 @@ import {
     CardTitle,
   } from "@/components/ui/card";
   import { Input } from "@/components/ui/input"
-  import { generateRandomKeyPair, sendUsdcTransaction } from '@/service/wallet/utils';
+  import { generateRandomKeyPair, getUSDCBalance, sendUsdcTransaction, addLinkToStorage } from '@/service/wallet/utils';
   import toast from 'react-hot-toast';
   import { useSendTransaction, useWaitForTransaction } from 'wagmi' 
   import { Button } from '../ui/button';
+  import { db } from '@/utils/db';
 
 const CreateLink = () => {
 
@@ -64,12 +65,16 @@ const CreateLink = () => {
     const inputRef1 = useRef(null);
     const inputRef2 = useRef(null);
 
+    const fetchBalance = async () => {
+        const balance = await getUSDCBalance(address!);
+        setBalance(((parseInt(balance._hex, 16))/1000000).toFixed(2))
+    }
 
     useEffect(() => {
         setConnected(isConnected);
         // clearStorage()
         if(isConnected){
-            // fetchBalance()
+            fetchBalance()
         }
     }, [isConnected, address])
 
@@ -125,11 +130,11 @@ const CreateLink = () => {
 
         setLoading(true);
 
-        // if(parseFloat(amount) > parseFloat(balance)){
-        //     invalidAmountToast()
-        //     setLoading(false)             
-        //     return;
-        // }
+        if(parseFloat(amount) > parseFloat(balance)){
+            invalidAmountToast()
+            setLoading(false)             
+            return;
+        }
         // generate hash and address for link
         const newPair = await generateRandomKeyPair()
         setNewAddress(newPair.address)
@@ -172,50 +177,37 @@ const CreateLink = () => {
         toast.dismiss(toastId);
         toast.success("Transaction Confirmed");
 
-        // let data;
-        // if(type === 0){
-        //     data = {
-        //         type: 0,
-        //         amount: amount,
-        //         message: '',
-        //         image: '',
-        //         imageDescription: '',
-        //         link: hashLink,
-        //         toAddress: newAddress,
-        //         isClaimed: false
-        //     }
-        // }else if(type === 1){
-        //     data = {
-        //         type: 1,
-        //         amount: amount,
-        //         message: message,
-        //         image: '',
-        //         imageDescription: '',
-        //         link: hashLink,
-        //         toAddress: newAddress,
-        //         isClaimed: false
-        //     }
-        // }else if(type === 2){
-        //     data = {
-        //         type: 2,
-        //         amount: amount,
-        //         message: '',
-        //         image: image,
-        //         imageDescription: imageDescription,
-        //         link: hashLink,
-        //         toAddress: newAddress,
-        //         isClaimed: false
-        //     }
-        // }
-        // addLinkToStorage(data);
+        let data;
+        if(activeTab === 0){
+            data = {
+                type: 0,
+                amount: amount,
+                message: '',
+                image: '',
+                link: hashLink,
+                toAddress: newAddress,
+                isClaimed: false
+            }
+        }else if(activeTab === 1){
+            data = {
+                type: 1,
+                amount: amount,
+                message: message,
+                image: image,
+                link: hashLink,
+                toAddress: newAddress,
+                isClaimed: false
+            }
+        }
+        addLinkToStorage(data);
         setLoading(false);
         //@ts-ignore
-        // delete data?.link
-        // try{
-        //     await db.set(newAddress, data);
-        // }catch(e){
-        //     console.log("Error occured while saving");
-        // }
+        delete data?.link
+        try{
+            await db.set(newAddress, data);
+        }catch(e){
+            console.log("Error occured while saving");
+        }
         // router.push(`/create/${newAddress}`)
         return;
     }
@@ -265,7 +257,7 @@ const CreateLink = () => {
                     activeTab === 0 && 
                     <div className='mt-20'>
                          {/* @ts-ignore */}
-                        <div onClick={() => {inputRef1.current.focus()}} className='w-[330px] cursor-pointer h-[450px] rounded-3xl overflow-hidden relative flex flex-col justify-start '>
+                        <div onClick={() => {inputRef1.current.focus()}} className='w-[330px] cursor-pointer h-[450px] rounded-3xl relative flex flex-col justify-start '>
                             <div className='w-full flex justify-center z-20 absolute top-[180px]'>
                                 <span className='text-white text-[45px] font-sat font-bold'>$</span>
                                 <div className='max-w-[270px] overflow-clip'>
@@ -278,7 +270,12 @@ const CreateLink = () => {
                                 <Link className='text-gray-400 w-4 h-4' />
                                 <span className='font-semibold text-gray-400 text-[18px] font-sat'>flex.it</span>                    
                             </div>
-                            <WavyBackground />
+                            <div className='w-full overflow-hidden'>
+                                <WavyBackground />
+                            </div>
+                            <div className='absolute z-10 right-[10px] -top-[30px] flex items-center'>
+                                <span className='text-white tect-[18px] font-sat'>Max: {balance}</span>
+                            </div>
                         </div>
                     </div>
                 }
@@ -364,7 +361,9 @@ const CreateLink = () => {
                                     </AlertDialogHeader>
                                 </AlertDialogContent>
                             </AlertDialog>
-
+                            <div className='absolute z-10 right-[10px] -top-[30px] flex items-center'>
+                                <span className='text-white tect-[18px] font-sat'>Max: {balance}</span>
+                            </div>
                             <div className='absolute arrow-right z-10 top-[175px] -left-[30px] cursor-pointer'></div>
                             <div onClick={(e) => handleColorChange(e, "black")} className='top-[180px] -right-[50px] absolute w-[30px] h-[30px] rounded-full border-[1px] border-white bg-black' />
                             <div onClick={(e) => handleColorChange(e, "white")} className='top-[230px] -right-[50px] absolute w-[30px] h-[30px] rounded-full bg-white' />
