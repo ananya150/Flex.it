@@ -43,7 +43,7 @@ const CreateLink = () => {
     const [amount, setAmount] = useState('');
     const {isConnected, address} = useAccount()
     const [connected , setConnected] = useState(false);
-    const [balance, setBalance] = useState('0.0');
+    const [balance, setBalance] = useState('0.00');
     const [isDark, setIsDark] = useState(false);
     const [imageLink, setImageLink] = useState('');
     const [insertedImage, setInsertedImage] = useState<any>(null);
@@ -219,6 +219,10 @@ const CreateLink = () => {
         return;
     }
 
+    const setMax = (e: any) => {
+        e.stopPropagation(); 
+        setAmount(balance)
+    }
 
     const invalidAmountToast = () => {
         toast.custom((t: any) => (
@@ -255,17 +259,17 @@ const CreateLink = () => {
     }
 
     return (
-        <div className='flex w-full'>
-            <div className='w-1/2 flex flex-col items-center ml-20'>
-                <div className='mt-[180px] flex items-end ml-3'>
+        <div className='flex w-full justify-center'>
+            <div className='flex flex-col items-center'>
+                <div className='mt-[18vh] flex items-end ml-3'>
                     <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
                 </div>
                 {
                     activeTab === 0 && 
-                    <div className='mt-20'>
-                         {/* @ts-ignore */}
-                        <div onClick={() => {inputRef1.current.focus()}} className='w-[330px] cursor-pointer h-[450px] rounded-3xl relative flex flex-col justify-start '>
-                            <div className='w-full flex justify-center z-20 absolute top-[180px]'>
+                    // @ts-ignore
+                    <div onClick={() => {inputRef1.current.focus()}} className='rounded-3xl cursor-pointer mt-[4vh]'>
+                        <div className='w-[350px] h-[55vh] rounded-3xl relative flex flex-col justify-start overflow-hidden'>
+                            <div className='w-full flex justify-center z-20 absolute top-[23vh]'>
                                 <span className='text-white text-[45px] font-sat font-bold'>$</span>
                                 <div className='max-w-[270px] overflow-clip'>
                                     <span className='text-white text-[45px] font-sat font-bold'>{amount}</span>
@@ -280,16 +284,15 @@ const CreateLink = () => {
                             <div className='w-full overflow-hidden'>
                                 <WavyBackground />
                             </div>
-                            <div className='absolute z-10 right-[10px] -top-[30px] flex items-center'>
-                                <span className='text-white tect-[18px] font-sat'>Max: {balance}</span>
+                            <div onClick={(e) => setMax(e)} className='absolute top-[33vh] w-full text-center'>
+                                <span className='font-semibold text-[13px] text-white font-sat z-50 px-3 py-2 rounded-2xl bg-zinc-800'>Max: {balance} USDC</span>
                             </div>
                         </div>
                     </div>
                 }
-                {
+                {/* {
                     activeTab === 1 &&
                     <div className='mt-20'>
-                        {/* @ts-ignore */}
                         <div onClick={() => {inputRef1.current.focus()}} style={{backgroundImage: image}} className={`w-[330px] cursor-pointer bg-cover h-[450px] rounded-3xl relative flex flex-col justify-start`}>
                             <div className='w-full flex justify-center z-20 absolute top-[180px]'>
                                 <span className={`${isDark ? 'text-black' : 'text-white'}  text-[45px] font-sat font-bold`}>$</span>
@@ -328,7 +331,6 @@ const CreateLink = () => {
                                                         <CardHeader>
                                                             <CardTitle>Upload Image Here</CardTitle>
                                                         </CardHeader>
-                                                        {/*  @ts-ignore */}
                                                         <CardContent className="space-y-2 h-[200px] flex flex-col justify-center items-center  ">
                                                             <Image className='w-9 h-9 text-gray-500' />
                                                             <input
@@ -336,7 +338,6 @@ const CreateLink = () => {
                                                                 name="myImage"
                                                                 className='ml-20'
                                                                 onChange={(event) => {
-                                                                    // @ts-ignore
                                                                     setInsertedImage(event.target.files[0]);
                                                                 }}
                                                             />
@@ -376,41 +377,39 @@ const CreateLink = () => {
                             <div onClick={(e) => handleColorChange(e, "white")} className='top-[230px] -right-[50px] absolute w-[30px] h-[30px] rounded-full bg-white' />
                         </div>
                     </div>
-                }
-            </div>
-            <div className='w-1/2 flex flex-col justify-center items-center'>
+                } */}
                 {
-                    isCreated ?
-                    <div className='flex flex-col items-center space-y-8 mt-16'>
-                        <QRCode value={`http://localhost:3000/claim/${hashLink}`} className='w-[120px] h-[120px]' />
-                        <div className='flex items-center space-x-2'>
-                            <div className='bg-white px-4 py-2 rounded-xl text-[14px] font-semibold font-sat'>http://localhost:3000/claim/{hashLink}</div>
-                            <div onClick={copy}  className='bg-white rounded-xl p-2 w-fit cursor-pointer'>
-                                <Copy className='text-[#14141B] h-4 w-4' />
-                            </div>
-                        </div>
-                    </div>
-                    :
-                    (
+                    // isCreated ?
+                    // <div className='flex flex-col items-center space-y-8 mt-16'>
+                    //     <QRCode value={`http://localhost:3000/claim/${hashLink}`} className='w-[120px] h-[120px]' />
+                    //     <div className='flex items-center space-x-2'>
+                    //         <div className='bg-white px-4 py-2 rounded-xl text-[14px] font-semibold font-sat'>http://localhost:3000/claim/{hashLink}</div>
+                    //         <div onClick={copy}  className='bg-white rounded-xl p-2 w-fit cursor-pointer'>
+                    //             <Copy className='text-[#14141B] h-4 w-4' />
+                    //         </div>
+                    //     </div>
+                    // </div>
+                    // :
+                    // (
                         connected ?
                         (
                             loading ?
                             <div>
-                                <div onClick={handleButtonClick} className='w-[130px] mt-40 bg-white h-[45px] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-not-allowed flex justify-center items-center' >
+                                <div onClick={handleButtonClick} className='w-[130px] bg-white h-[45px] mt-[7vh] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-not-allowed flex justify-center items-center' >
                                     <ReloadIcon className="h-3 w-3 animate-spin mr-6" />
                                     <span className='font-medium transition-[1s] text-[15px]'>Waiting</span>
                                 </div>
                             </div>
                             :
-                            <div onClick={handleButtonClick} className='w-[130px] mt-40 bg-white h-[45px] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
+                            <div onClick={handleButtonClick} className='w-[130px] bg-white h-[45px] rounded-lg mt-[7vh] hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
                                 <span className='font-medium transition-[1s] text-[18px]'>Create Link</span>
                             </div>
                         )
                             :
-                        <div onClick={handleConnectWallet} className='w-[130px] mt-40 bg-white h-[45px] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
+                        <div onClick={handleConnectWallet} className='w-[130px] bg-white h-[45px] rounded-lg mt-[7vh] hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
                             <span className='font-medium transition-[1s] text-[15px]'>Connect Wallet</span>
                         </div>
-                    )
+                    // )
                 }
             </div>
         </div>

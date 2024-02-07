@@ -56,7 +56,7 @@ export const Tabs = ({
             }}
             onMouseEnter={() => setHovering(true)}
             onMouseLeave={() => setHovering(false)}
-            className="relative px-5 py-3 rounded-full"
+            className="relative px-4 py-2 rounded-full"
             style={{
               transformStyle: "preserve-3d",
             }}
@@ -68,7 +68,7 @@ export const Tabs = ({
                 className="absolute inset-0 bg-zinc-800 rounded-full "
               />
             )}
-            <span className="relative block text-white text-[20px] font-sat">
+            <span className="relative block text-white text-[16px] font-sat">
               {tab.title}
             </span>
           </button>
