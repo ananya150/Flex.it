@@ -1,5 +1,5 @@
 "use client";
-import React,{useState, useEffect, useRef} from 'react'
+import React,{useState, useEffect, useRef, useCallback} from 'react'
 import { Tabs } from './Tabs';
 import { WavyBackground } from './WavyBackground';
 import { Link, PartyPopper, Image, AlertCircle, Copy } from 'lucide-react';
@@ -34,11 +34,13 @@ import {
   import { useSendTransaction, useWaitForTransaction } from 'wagmi' 
   import { db } from '@/utils/db';
   import QRCode from "react-qr-code";
+  import TextareaAutosize from 'react-textarea-autosize';
+
 
 const CreateLink = () => {
 
-    const [activeTab, setActiveTab] = useState(0);
-    const [image, setImage] = useState("url(/scene.jpg)");
+    const [activeTab, setActiveTab] = useState(1);
+    const [image, setImage] = useState("url(/people.jpg)");
     const [message, setMessage] = useState('');
     const [amount, setAmount] = useState('');
     const {isConnected, address} = useAccount()
@@ -53,7 +55,10 @@ const CreateLink = () => {
     const [newAddress, setNewAddress] = useState('');
     const [hashLink, setHashLink] = useState('');
 
-    const [isCreated, setIsCreated] = useState(false)
+    const [isCreated, setIsCreated] = useState(false);
+
+    const [autoResizeEnabled, setAutoResizeEnabled] = useState(false);
+    const [height, setHeight] = useState<any>(90);
 
     const {  data , sendTransaction, isError } = useSendTransaction() 
     const {
@@ -76,7 +81,7 @@ const CreateLink = () => {
         setConnected(isConnected);
         // clearStorage()
         if(isConnected){
-            fetchBalance()
+            // fetchBalance()
         }
     }, [isConnected, address])
 
@@ -224,6 +229,11 @@ const CreateLink = () => {
         setAmount(balance)
     }
 
+    const onAutoResizeChanged = useCallback((e: any) => {
+        setAutoResizeEnabled(e.value);
+        setHeight(e.value ? undefined : 90);
+      }, []);
+
     const invalidAmountToast = () => {
         toast.custom((t: any) => (
             <div
@@ -269,7 +279,7 @@ const CreateLink = () => {
                     // @ts-ignore
                     <div onClick={() => {inputRef1.current.focus()}} className='rounded-3xl cursor-pointer mt-[4vh]'>
                         <div className='w-[350px] h-[55vh] rounded-3xl relative flex flex-col justify-start overflow-hidden'>
-                            <div className='w-full flex justify-center z-20 absolute top-[23vh]'>
+                            <div className='w-full flex justify-center z-20 absolute top-[21vh]'>
                                 <span className='text-white text-[45px] font-sat font-bold'>$</span>
                                 <div className='max-w-[270px] overflow-clip'>
                                     <span className='text-white text-[45px] font-sat font-bold'>{amount}</span>
@@ -284,8 +294,34 @@ const CreateLink = () => {
                             <div className='w-full overflow-hidden'>
                                 <WavyBackground />
                             </div>
-                            <div onClick={(e) => setMax(e)} className='absolute top-[33vh] w-full text-center'>
+                            <div onClick={(e) => setMax(e)} className='absolute top-[32vh] w-full text-center'>
                                 <span className='font-semibold text-[13px] text-white font-sat z-50 px-3 py-2 rounded-2xl bg-zinc-800'>Max: {balance} USDC</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+                {
+                    activeTab === 1 &&
+                    // @ts-ignore
+                    <div onClick={() => {inputRef1.current.focus()}} style={{backgroundImage: image}} className='rounded-3xl cursor-pointer mt-[4vh] bg-cover'>
+                        <div className='w-[350px] h-[55vh] rounded-3xl relative flex flex-col justify-start overflow-hidden'>
+                            <div className='w-full flex justify-center z-20 absolute top-[24vh]'>
+                                <span className='text-white text-[45px] font-sat font-bold'>$</span>
+                                <div className='max-w-[270px] overflow-clip'>
+                                    <span className='text-white text-[45px] font-sat font-bold'>{amount}</span>
+                                </div>
+                                <input ref={inputRef1} value={amount} onChange={handleAmountChange} autoFocus className='outline-none border-none bg-transparent w-[1px] text-[45px] ml-[4px] text-white' />
+                                <span className={`text-gray-300 text-[45px] font-sat font-bold ${amount.length === 0 ? '': 'hidden'}`}>0.0</span>
+                            </div>
+                            <div className='w-full flex justify-start items-center z-20 absolute space-x-2 top-[15px] px-[15px]'>
+                                <Link className={`${isDark ? 'text-black' : 'text-gray-400'} w-4 h-4`} />
+                                <span className={`font-semibold ${isDark ? 'text-black' : 'text-gray-400'} text-[18px] font-sat`}>flex.it</span>                    
+                            </div>
+                            {/* <div onClick={(e) => setMax(e)} className='absolute top-[33vh] w-full text-center'>
+                                <span className='font-semibold text-[13px] text-white font-sat z-50 px-3 py-2 rounded-2xl bg-zinc-800 bg-opacity-80'>Max: {balance} USDC</span>
+                            </div> */}
+                            <div onClick={handleEnterMessage} className={`absolute bottom-[2vh] z-40 mx-[20px] w-[310px] rounded-xl space-x-4 overflow-hidden `}>
+                                <TextareaAutosize  value={message} onChange={(e) => {setMessage(e.target.value)}} placeholder='Enter a small message!' ref={inputRef2} className={`${isDark ? 'text-white': 'text-white'} font-bold max-h-[8rem] font-sat text-center outline-none border-none bg-transparent w-[300px] text-[17px] py-3 px-4`} ></TextareaAutosize>
                             </div>
                         </div>
                     </div>

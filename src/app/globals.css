@@ -122,6 +122,7 @@
   z-index: -1;
 }
 
+
 .no-visible-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
