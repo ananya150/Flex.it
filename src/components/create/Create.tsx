@@ -14,6 +14,7 @@ import QRCode from "react-qr-code";
 import TextareaAutosize from 'react-textarea-autosize';
 import ColorPicker from './ColorPicker';
 import ImagePicker from './ImagePicker';
+import axios from 'axios'
 
 const CreateLink = () => {
 
@@ -32,6 +33,7 @@ const CreateLink = () => {
 
     const [newAddress, setNewAddress] = useState('');
     const [hashLink, setHashLink] = useState('');
+    const [uploadedImage, setUploadedImage] = useState<any>(null);
 
     const [isCreated, setIsCreated] = useState(false);
 
@@ -104,10 +106,26 @@ const CreateLink = () => {
         setImageLink('');
     }
 
-    const handleInsertImage = () => {
+    const handleInsertImage = async () => {
         console.log(URL.createObjectURL(insertedImage))
         setImage(`url(${URL.createObjectURL(insertedImage)})`);
-        setInsertedImage('')
+
+        console.log("uploading")
+
+        const res = await axios.get('/api/');
+        const url = res.data.uploadUrl;
+
+        await fetch(url, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "multipart/form-data"
+            },
+            body: insertedImage
+        })
+        console.log("upload finish")
+        const imageUrl = url.split('?')[0];
+        console.log(imageUrl);
+        setImage(`url(${imageUrl})`);
     }
 
     const copy = () => {
