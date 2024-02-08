@@ -29,7 +29,7 @@ const ImagePicker = ({imageLink, setImageLink, handleInsertLink, handleInsertIma
     <AlertDialog>
         <AlertDialogTrigger asChild>
             <div className=''>
-                <span className='font-medium text-[12px] bg-white px-4 py-2 rounded-lg'>Insert Image</span>
+                <span className='font-semibold text-[12px] bg-white bg-opacity-50 px-4 py-2 rounded-lg'>Insert Image</span>
             </div>
         </AlertDialogTrigger>
         <AlertDialogContent className='max-w-[360px]'>

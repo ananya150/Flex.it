@@ -17,7 +17,7 @@ import ImagePicker from './ImagePicker';
 
 const CreateLink = () => {
 
-    const [activeTab, setActiveTab] = useState(1);
+    const [activeTab, setActiveTab] = useState(0);
     const [image, setImage] = useState("url(/people.jpg)");
     const [message, setMessage] = useState('');
     const [amount, setAmount] = useState('');
@@ -36,7 +36,6 @@ const CreateLink = () => {
     const [isCreated, setIsCreated] = useState(false);
 
     const [colo1, setColor1] = useState('#fff');
-    const [colo2, setColor2] = useState('#fff');
 
     const {  data , sendTransaction, isError } = useSendTransaction() 
     const {
@@ -59,7 +58,7 @@ const CreateLink = () => {
         setConnected(isConnected);
         // clearStorage()
         if(isConnected){
-            // fetchBalance()
+            fetchBalance()
         }
     }, [isConnected, address])
 
@@ -176,6 +175,7 @@ const CreateLink = () => {
                 image: '',
                 link: hashLink,
                 toAddress: newAddress,
+                color: colo1,
                 isClaimed: false
             }
         }else if(activeTab === 1){
@@ -186,6 +186,7 @@ const CreateLink = () => {
                 image: image,
                 link: hashLink,
                 toAddress: newAddress,
+                color: colo1,
                 isClaimed: false
             }
         }
@@ -243,187 +244,110 @@ const CreateLink = () => {
 
     return (
         <div className='flex w-full justify-center'>
-            <div className='flex flex-col items-center'>
-                <div className='mt-[18vh] flex items-end ml-3'>
-                    <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
+            {
+                isCreated ? 
+                <div className='flex flex-col items-center'>
+                    <div className='mt-[20vh] w-full flex justify-center'>
+                        <span className='text-white text-[37px] sm:text-[45px] font-sat font-bold'>Your link is ready!</span>
+                    </div>
+                         <div className='flex flex-col items-center mt-[10vh]'>
+                            <div className='bg-white p-3'>
+                                <QRCode value={`http://localhost:3000/claim/${hashLink}`} className='w-[120px] h-[120px]' />
+                            </div>
+                             <div className='flex items-center space-x-2 mt-[7vh]'>
+                                 <div className='bg-zinc-800 text-white  px-4 py-2 rounded-xl text-[12px] sm:text-[15px] font-semibold font-sat'>http://localhost:3000/claim/{hashLink}</div>
+                             </div>
+                             <div className='mt-[3vh] flex justify-between w-[200px]'>
+                                <div onClick={copy} className='flex items-center space-x-2 cursor-pointer'>
+                                    <div className='bg-zinc-800 text-white  px-4 py-2 rounded-xl text-[12px] sm:text-[15px] font-semibold font-sat'>Copy</div>
+                                </div>
+                                <div className='flex items-center space-x-2 cursor-not-allowed'>
+                                    <div className='bg-zinc-800 text-white  px-4 py-2 rounded-xl text-[12px] sm:text-[15px] font-semibold font-sat'>Share</div>
+                                </div>
+                             </div>
+                         </div>
                 </div>
-                {
-                    activeTab === 0 && 
-                    // @ts-ignore
-                    <div onClick={() => {inputRef1.current.focus()}} className='rounded-3xl cursor-pointer mt-[5vh]'>
-                        <div className='w-[340px] h-[55vh] rounded-3xl relative flex flex-col justify-start overflow-hidden'>
-                            <div className='w-full flex justify-center z-20 absolute top-[21vh]'>
-                                <span className='text-white text-[45px] font-sat font-bold'>$</span>
-                                <div className='max-w-[270px] overflow-clip'>
-                                    <span className='text-white text-[45px] font-sat font-bold'>{amount}</span>
-                                </div>
-                                <input ref={inputRef1} value={amount} onChange={handleAmountChange} autoFocus className='outline-none border-none bg-transparent w-[1px] text-[45px] ml-[4px] text-white' />
-                                <span className={`text-gray-400 text-[45px] font-sat font-bold ${amount.length === 0 ? '': 'hidden'}`}>0.0</span>
-                            </div>
-                            <div className='w-full flex justify-start items-center z-20 absolute space-x-2 top-[15px] px-[15px]'>
-                                <Link className='text-gray-400 w-4 h-4' />
-                                <span className='font-semibold text-gray-400 text-[18px] font-sat'>flex.it</span>                    
-                            </div>
-                            <div className='w-full overflow-hidden'>
-                                <WavyBackground />
-                            </div>
-                            <div onClick={(e) => setMax(e)} className='absolute top-[32vh] w-full text-center'>
-                                <span className='font-semibold text-[13px] text-white font-sat z-50 px-3 py-2 rounded-2xl bg-zinc-800'>Max: {balance} USDC</span>
-                            </div>
-                        </div>
+                :
+                <div className='flex flex-col items-center'>
+                    <div className='mt-[18vh] flex items-end ml-3'>
+                        <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
                     </div>
-                }
-                {
-                    activeTab === 1 &&
-                    // @ts-ignore
-                    <div onClick={() => {inputRef1.current.focus()}} style={{backgroundImage: image}} className='rounded-3xl cursor-pointer mt-[5vh] bg-cover'>
-                        <div className='w-[340px] h-[55vh] rounded-3xl relative flex flex-col justify-start '>
-                            <div className='w-full flex justify-center z-20 absolute top-[24vh]'>
-                                <span style={{color: colo1}} className=' text-[45px] font-sat font-bold'>$</span>
-                                <div className='max-w-[270px] overflow-clip'>
-                                    <span style={{color: colo1}} className=' text-[45px] font-sat font-bold'>{amount}</span>
-                                </div>
-                                <input ref={inputRef1} value={amount} onChange={handleAmountChange} autoFocus className='outline-none border-none bg-transparent w-[1px] text-[45px] ml-[4px] text-white' />
-                                <span className={`text-gray-300 text-[45px] font-sat font-bold ${amount.length === 0 ? '': 'hidden'}`}>0.0</span>
-                            </div>
-                            <div className='w-full flex justify-start items-center z-20 absolute space-x-2 top-[15px] px-[15px]'>
-                                <Link className={`${isDark ? 'text-black' : 'text-gray-400'} w-4 h-4`} />
-                                <span className={`font-semibold ${isDark ? 'text-black' : 'text-gray-400'} text-[18px] font-sat`}>flex.it</span>                    
-                            </div>
-                            {/* <div className='absolute -bottom-[35px] right-[30px] z-50'>
-                                <ColorPicker selectedColor={colo1} setSelectedColor={setColor1} />
-                            </div>
-                            <div className='absolute -bottom-[35px] left-[30px] z-50'>
-                                <ImagePicker handleInsertImage={handleInsertImage} handleInsertLink={handleInsertLink} imageLink={imageLink} setImageLink={setImageLink} setInsertedImage={setInsertedImage} />
-                            </div> */}
-                            <div onClick={handleEnterMessage} className={`absolute bottom-[2vh] z-40 mx-[20px] w-[310px] rounded-xl space-x-4 overflow-hidden `}>
-                                <TextareaAutosize  value={message} onChange={(e) => {setMessage(e.target.value)}} placeholder='Enter a small message!' ref={inputRef2} style={{color: colo1}} className={`font-bold max-h-[8rem] font-sat text-center outline-none border-none bg-transparent w-[300px] text-[17px] py-3 px-4`} ></TextareaAutosize>
-                            </div>
-                        </div>
-                    </div>
-                }
-                {/* {
-                    activeTab === 1 &&
-                    <div className='mt-20'>
-                        <div onClick={() => {inputRef1.current.focus()}} style={{backgroundImage: image}} className={`w-[330px] cursor-pointer bg-cover h-[450px] rounded-3xl relative flex flex-col justify-start`}>
-                            <div className='w-full flex justify-center z-20 absolute top-[180px]'>
-                                <span className={`${isDark ? 'text-black' : 'text-white'}  text-[45px] font-sat font-bold`}>$</span>
-                                <div className='max-w-[270px] overflow-clip'>
-                                    <span className={`${isDark ? 'text-black' : 'text-white'}  text-[45px] font-sat font-bold`}>{amount}</span>
-                                </div>
-                                <input ref={inputRef1} value={amount} onChange={handleAmountChange} autoFocus className='outline-none border-none ml-1 bg-transparent w-[1px] text-[45px] text-white' />
-                                <span className={`${isDark ? 'text-gray-900' : 'text-gray-400'} text-[45px] font-sat font-bold ${amount.length === 0 ? '': 'hidden'}`}>0.0</span>
-                            </div>
-                            <div className='w-full flex justify-start items-center z-20 absolute space-x-2 top-[15px] px-[15px]'>
-                                <Link className={`${isDark ? 'text-black' : 'text-gray-400'} w-4 h-4`} />
-                                <span className={`font-semibold ${isDark ? 'text-black' : 'text-gray-400'} text-[18px] font-sat`}>flex.it</span>                    
-                            </div>
-                            <div onClick={handleEnterMessage} className={`absolute bottom-[20px] z-40 mx-[20px] w-[290px] px-3 ${isDark ? 'bg-black': 'bg-white'} rounded-xl h-[50px] flex items-center space-x-4 overflow-hidden`}>
-                                <div className={`h-[30px] w-[30px] rounded-full ${isDark ? 'bg-[#0767EB]': 'bg-[#EA52A2] ' } flex flex-col justify-center items-center`}>
-                                    <PartyPopper className='w-4 h-4 text-white' />
-                                </div>
-                                <input value={message} onChange={(e) => {setMessage(e.target.value)}} placeholder='Enter a small message!' ref={inputRef2} className={`${isDark ? 'text-white': 'text-black'} font-bold font-sans outline-none border-none bg-transparent w-[220px] text-[15px]`} ></input>
-                            </div>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <div className='absolute -left-[190px] z-10 top-[175px] bg-white w-[170px] h-[40px] cursor-pointer rounded-xl flex flex-col justify-center items-center '>
-                                        <span className='font-medium text-[12px]'>Upload background image</span>
+                    {
+                        activeTab === 0 && 
+                        // @ts-ignore
+                        <div onClick={() => {inputRef1.current.focus()}} className='rounded-3xl cursor-pointer mt-[5vh]'>
+                            <div className='w-[340px] h-[55vh] rounded-3xl relative flex flex-col justify-start overflow-hidden'>
+                                <div className='w-full flex justify-center z-20 absolute top-[21vh]'>
+                                    <span className='text-white text-[45px] font-sat font-bold'>$</span>
+                                    <div className='max-w-[270px] overflow-clip'>
+                                        <span className='text-white text-[45px] font-sat font-bold'>{amount}</span>
                                     </div>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogDescription className='flex justify-center'>
-                                            <ShadTabs defaultValue="upload" className="w-[400px]">
-                                                <TabsList className="grid w-full grid-cols-2">
-                                                    <TabsTrigger value="upload">Upload Image</TabsTrigger>
-                                                    <TabsTrigger value="insert">Insert Link</TabsTrigger>
-                                                </TabsList>
-                                                <TabsContent value="upload">
-                                                    <Card>
-                                                        <CardHeader>
-                                                            <CardTitle>Upload Image Here</CardTitle>
-                                                        </CardHeader>
-                                                        <CardContent className="space-y-2 h-[200px] flex flex-col justify-center items-center  ">
-                                                            <Image className='w-9 h-9 text-gray-500' />
-                                                            <input
-                                                                type="file"
-                                                                name="myImage"
-                                                                className='ml-20'
-                                                                onChange={(event) => {
-                                                                    setInsertedImage(event.target.files[0]);
-                                                                }}
-                                                            />
-                                                        </CardContent>
-                                                        <CardFooter className='flex justify-end px-5 space-x-5'>
-                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                            <AlertDialogAction onClick={handleInsetImage}>Confirm</AlertDialogAction>
-                                                        </CardFooter>
-                                                    </Card>
-                                                </TabsContent>
-                                                <TabsContent value="insert">
-                                                    <Card>
-                                                        <CardHeader>
-                                                            <CardTitle>Insert Link Here</CardTitle>
-                                                        </CardHeader>
-                                                        <CardContent className="space-y-2 h-[200px] flex flex-col justify-center">
-                                                            <div className="space-y-1">
-                                                                <Input value={imageLink} onChange={(e) => {setImageLink(e.target.value)}} id="current"  />
-                                                            </div>
-                                                        </CardContent>
-                                                        <CardFooter className='flex justify-end px-5 space-x-5'>
-                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                            <AlertDialogAction onClick={handleInsertLink}>Confirm</AlertDialogAction>
-                                                        </CardFooter>
-                                                    </Card>
-                                                </TabsContent>
-                                            </ShadTabs>
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                            <div className='absolute z-10 right-[10px] -top-[30px] flex items-center'>
-                                <span className='text-white tect-[18px] font-sat'>Max: {balance}</span>
-                            </div>
-                            <div className='absolute arrow-right z-10 top-[175px] -left-[30px] cursor-pointer'></div>
-                            <div onClick={(e) => handleColorChange(e, "black")} className='top-[180px] -right-[50px] absolute w-[30px] h-[30px] rounded-full border-[1px] border-white bg-black' />
-                            <div onClick={(e) => handleColorChange(e, "white")} className='top-[230px] -right-[50px] absolute w-[30px] h-[30px] rounded-full bg-white' />
-                        </div>
-                    </div>
-                } */}
-                {
-                    // isCreated ?
-                    // <div className='flex flex-col items-center space-y-8 mt-16'>
-                    //     <QRCode value={`http://localhost:3000/claim/${hashLink}`} className='w-[120px] h-[120px]' />
-                    //     <div className='flex items-center space-x-2'>
-                    //         <div className='bg-white px-4 py-2 rounded-xl text-[14px] font-semibold font-sat'>http://localhost:3000/claim/{hashLink}</div>
-                    //         <div onClick={copy}  className='bg-white rounded-xl p-2 w-fit cursor-pointer'>
-                    //             <Copy className='text-[#14141B] h-4 w-4' />
-                    //         </div>
-                    //     </div>
-                    // </div>
-                    // :
-                    // (
-                        connected ?
-                        (
-                            loading ?
-                            <div>
-                                <div onClick={handleButtonClick} className='w-[130px] bg-white h-[45px] mt-[7vh] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-not-allowed flex justify-center items-center' >
-                                    <ReloadIcon className="h-3 w-3 animate-spin mr-6" />
-                                    <span className='font-medium transition-[1s] text-[15px]'>Waiting</span>
+                                    <input ref={inputRef1} value={amount} onChange={handleAmountChange} autoFocus className='outline-none border-none bg-transparent w-[1px] text-[45px] ml-[4px] text-white' />
+                                    <span className={`text-gray-400 text-[45px] font-sat font-bold ${amount.length === 0 ? '': 'hidden'}`}>0.0</span>
+                                </div>
+                                <div className='w-full flex justify-start items-center z-20 absolute space-x-2 top-[15px] px-[15px]'>
+                                    <Link className='text-gray-400 w-4 h-4' />
+                                    <span className='font-semibold text-gray-400 text-[18px] font-sat'>flex.it</span>                    
+                                </div>
+                                <div className='w-full overflow-hidden'>
+                                    <WavyBackground />
+                                </div>
+                                <div onClick={(e) => setMax(e)} className='absolute top-[32vh] w-full text-center'>
+                                    <span className='font-semibold text-[13px] text-white font-sat z-50 px-3 py-2 rounded-2xl bg-zinc-800'>Max: {balance} USDC</span>
                                 </div>
                             </div>
-                            :
-                            <div onClick={handleButtonClick} className='w-[130px] bg-white h-[45px] rounded-lg mt-[7vh] hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
-                                <span className='font-medium transition-[1s] text-[18px]'>Create Link</span>
-                            </div>
-                        )
-                            :
-                        <div onClick={handleConnectWallet} className='w-[130px] bg-white h-[45px] rounded-lg mt-[7vh] hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
-                            <span className='font-medium transition-[1s] text-[15px]'>Connect Wallet</span>
                         </div>
-                    // )
-                }
-            </div>
+                    }
+                    {
+                        activeTab === 1 &&
+                        // @ts-ignore
+                        <div onClick={() => {inputRef1.current.focus()}} style={{backgroundImage: image}} className='rounded-3xl cursor-pointer mt-[5vh] bg-cover'>
+                            <div className='w-[340px] h-[55vh] rounded-3xl relative flex flex-col justify-start '>
+                                <div className='w-full flex justify-center z-20 absolute top-[24vh]'>
+                                    <span style={{color: colo1}} className=' text-[45px] font-sat font-bold'>$</span>
+                                    <div className='max-w-[270px] overflow-clip'>
+                                        <span style={{color: colo1}} className=' text-[45px] font-sat font-bold'>{amount}</span>
+                                    </div>
+                                    <input ref={inputRef1} value={amount} onChange={handleAmountChange} autoFocus className='outline-none border-none bg-transparent w-[1px] text-[45px] ml-[4px] text-white' />
+                                    <span className={`text-gray-300 text-[45px] font-sat font-bold ${amount.length === 0 ? '': 'hidden'}`}>0.0</span>
+                                </div>
+                                <div className='w-full flex justify-start items-center z-20 absolute space-x-2 top-[15px] px-[15px]'>
+                                    <Link className={`${isDark ? 'text-black' : 'text-gray-400'} w-4 h-4`} />
+                                    <span className={`font-semibold ${isDark ? 'text-black' : 'text-gray-400'} text-[18px] font-sat`}>flex.it</span>                    
+                                </div>
+                                <div className='absolute top-[2vh] right-[20px] z-50 flex flex-col space-y-4 items-center'>
+                                    <ImagePicker handleInsertImage={handleInsertImage} handleInsertLink={handleInsertLink} imageLink={imageLink} setImageLink={setImageLink} setInsertedImage={setInsertedImage} />
+                                    {/* <ColorPicker selectedColor={colo1} setSelectedColor={setColor1} /> */}
+                                </div>
+                                <div onClick={handleEnterMessage} className={`absolute bottom-[2vh] z-40 mx-[20px] w-[310px] rounded-xl space-x-4 overflow-hidden `}>
+                                    <TextareaAutosize  value={message} onChange={(e) => {setMessage(e.target.value)}} placeholder='Enter a small message!' ref={inputRef2} style={{color: colo1}} className={`font-bold max-h-[8rem] font-sat text-center outline-none border-none bg-transparent w-[300px] text-[17px] py-3 px-4`} ></TextareaAutosize>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    {
+                            connected ?
+                            (
+                                loading ?
+                                <div>
+                                    <div onClick={handleButtonClick} className='w-[130px] bg-white h-[45px] mt-[7vh] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-not-allowed flex justify-center items-center' >
+                                        <ReloadIcon className="h-3 w-3 animate-spin mr-6" />
+                                        <span className='font-medium transition-[1s] text-[15px]'>Waiting</span>
+                                    </div>
+                                </div>
+                                :
+                                <div onClick={handleButtonClick} className='w-[130px] bg-white h-[45px] rounded-lg mt-[7vh] hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
+                                    <span className='font-medium transition-[1s] text-[18px]'>Create Link</span>
+                                </div>
+                            )
+                                :
+                            <div onClick={handleConnectWallet} className='w-[130px] bg-white h-[45px] rounded-lg mt-[7vh] hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-pointer flex justify-center items-center'>
+                                <span className='font-medium transition-[1s] text-[15px]'>Connect Wallet</span>
+                            </div>
+                    }
+                </div>
+
+            }
         </div>
     )
 }

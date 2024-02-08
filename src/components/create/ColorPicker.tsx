@@ -23,8 +23,8 @@ const ColorPicker = ({selectedColor, setSelectedColor}: {selectedColor: any, set
   return (
     <AlertDialog>
         <AlertDialogTrigger asChild>
-            <div className='' >
-                <span style={{backgroundColor: selectedColor}} className='font-medium text-[12px] px-4 py-2 rounded-lg'>Pick color</span>
+            <div className=''>
+                <span className='font-semibold text-[12px] bg-white bg-opacity-50 px-[22px] py-2 rounded-lg'>Text Color</span>
             </div>
         </AlertDialogTrigger>
         <AlertDialogContent className='w-[330px] rounded-2xl'>
