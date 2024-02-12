@@ -223,7 +223,7 @@ export function ClaimDrawer({
                                 Base
                             </div>
                             <div className="text-[12px] text-[#4eaffe]">
-                                ~ 30 sec
+                                ~ 10 sec
                             </div>
                         </div>
                         <div onClick={() => {setSelectedChain(2)}} className={`w-full ${selectedChain === 2 ? 'border border-[#4eaffe]': 'border border-[#F7F8F9]'} bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-between items-center px-3 `}>
@@ -232,7 +232,7 @@ export function ClaimDrawer({
                                 Polygon
                             </div>
                             <div className="text-[12px] text-[#4eaffe]">
-                                ~ 20 min
+                                ~ 10 min
                             </div>
                         </div>
                     </div>

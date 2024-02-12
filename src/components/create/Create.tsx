@@ -16,6 +16,11 @@ import ColorPicker from './ColorPicker';
 import ImagePicker from './ImagePicker';
 import axios from 'axios'
 
+function isImage(url: string) {
+    return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url);
+  }
+
+
 const CreateLink = () => {
 
     const [activeTab, setActiveTab] = useState(0);
@@ -102,11 +107,24 @@ const CreateLink = () => {
     }
 
     const handleInsertLink = () => {
+        const isImg = isImage(imageLink);
+        if (!isImg){
+            toast.error("Imvalid image")
+            return;
+        }
         setImage(`url(${imageLink})`);
         setImageLink('');
     }
 
     const handleInsertImage = async () => {
+        if(insertedImage === null){
+            return;
+        }
+        const isImg = isImage(insertedImage.name);
+        if(!isImg){
+            toast.error("Invalid image");
+            return;
+        }
         console.log(URL.createObjectURL(insertedImage))
         setImage(`url(${URL.createObjectURL(insertedImage)})`);
 
@@ -125,7 +143,7 @@ const CreateLink = () => {
         console.log("upload finish")
         const imageUrl = url.split('?')[0];
         console.log(imageUrl);
-        setImage(`url(${imageUrl})`);
+        // setImage(`url(${imageUrl})`);
     }
 
     const copy = () => {

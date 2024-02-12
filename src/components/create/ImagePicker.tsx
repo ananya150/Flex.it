@@ -23,7 +23,6 @@ import {
   } from "@/components/ui/card";
   import { Input } from "@/components/ui/input"
 
-
 const ImagePicker = ({imageLink, setImageLink, handleInsertLink, handleInsertImage, setInsertedImage}: {imageLink : any, setImageLink : any, handleInsertLink : any, handleInsertImage : any, setInsertedImage : any} ) => {
   return (
     <AlertDialog>
