@@ -11,6 +11,7 @@ import { AccountService } from "@/service/wallet/service";
 import toast from "react-hot-toast";
 import { db } from "@/utils/db";
 import { FaGoogle } from "react-icons/fa";
+import Google from "./Google";
 
 export function ClaimDrawer({
     children,
@@ -31,6 +32,7 @@ export function ClaimDrawer({
     const [enteredAddress, setEnteredAddress] = useState('');
     const [isError, setIsError] = useState(false);
     const [selectedChain, setSelectedChain] = useState(0);
+    const [selectedAddressType, setSelectedAddressType] = useState(2);
     const [accountService, setAccountService] = useState<any>(null);
 
     const {isConnected, address} = useAccount();
@@ -39,8 +41,8 @@ export function ClaimDrawer({
 
     const handleConnectedWallet = () => {
         if(isConnected){
-            setEnteredAddress(address!)
-            setSnap("400px");
+            setSelectedAddressType(1);
+            // setSnap("400px");
             return;
         }
         setOpen(true);
@@ -52,16 +54,22 @@ export function ClaimDrawer({
         setEnterAddressPopUp(false);
         setEnteredAddress('');
         setIsError(false);
-        setSelectedChain(0)
+        setSelectedChain(0);
+        setSelectedAddressType(2);
     }
 
-    const handleEnterAddressNext = (address: string) => {
-        setIsError(false);
-        if(!ethers.utils.isAddress(address)){
-            setIsError(true);
-            return;
+    const handleEnterAddressNext = () => {
+        if(selectedAddressType === 1){
+            // setEnteredAddress(address!);
+            confirmTransfer(address!)
+        } else if(selectedAddressType === 2){
+            setIsError(false);
+            if(!ethers.utils.isAddress(enteredAddress)){
+                setIsError(true);
+                return;
+            }
+            confirmTransfer(enteredAddress)
         }
-        setSnap("400px");
     }
 
     const handleBack = () => {
@@ -70,15 +78,9 @@ export function ClaimDrawer({
         setSnap("300px");
     }
 
-    const confirmTransfer = () => {
-        if(selectedChain === 0){
-            return;
-        }
-        if(selectedChain === 2){
-            toast.error("Not enough liquidity in arbitrum right now. Try Ethereum sepolia for now.");
-            return;
-        }
-        const promise = accountService.transferUsdc(enteredAddress).then((txHash: any) => {
+    const confirmTransfer = (add: string) => {
+
+        const promise = accountService.transferUsdc(add).then((txHash: any) => {
             setTxHash(txHash)
             setClaimed(true);
             console.log("tx completed with hash", txHash);
@@ -143,10 +145,7 @@ export function ClaimDrawer({
                                     <BookUser className="text-black w-5 h-5 mr-4" />
                                     Ethereum Address
                                 </div>
-                                <div onClick={() => {setEnterAddressPopUp(true)}} className="w-full bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-start items-center px-3 ">
-                                    <FaGoogle className="text-black w-5 h-5 mr-4" />
-                                    Claim with Google
-                                </div>
+                                <Google />
                                 <div className="w-full cursor-not-allowed bg-[#FEF1F0] text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#FEF1F0] flex justify-between items-center px-3 ">
                                     <div className="flex items-center">
                                         <Landmark className="text-black w-5 h-5 mr-4" />
@@ -165,7 +164,7 @@ export function ClaimDrawer({
                             </div>
                             <Separator className="mt-4 bg-gray-100" />
                             <div className="mt-6 flex flex-col">
-                                <div onClick={handleConnectedWallet} className="w-full bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-start items-center px-3 ">
+                                <div onClick={handleConnectedWallet} className={`w-full ${selectedAddressType === 1 ? 'border border-[#4eaffe]': 'border border-[#F7F8F9]'} bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-start items-center px-3 `}>
                                     <Wallet className="text-black w-5 h-5 mr-4" />
                                     {isConnected ? `To ${address?.slice(0,6)}....${address?.slice(-4)}`: 'Connected Wallet'}
                                 </div>
@@ -174,7 +173,7 @@ export function ClaimDrawer({
                                     <span className="text-gray-400 text-[11px] font-sat">OR</span>
                                     <Separator className=" bg-gray-100 w-[110px]" />
                                 </div>
-                                <div className="w-full mt-3 bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-start items-center px-3 ">
+                                <div onClick={() => {setSelectedAddressType(2)}} className={`w-full mt-3 bg-[#F7F8F9] cursor-pointer text-black text-[17px] font-sat font-medium rounded-2xl py-3 hover:bg-[#F7F8F9] flex justify-start items-center px-3 ${selectedAddressType === 2 ? 'border border-[#4eaffe]': 'border border-[#F7F8F9]'} `}>
                                     <Wallet className="text-black w-5 h-5 mr-4" />
                                     <input value={enteredAddress} onChange={(e) => {setEnteredAddress(e.target.value)}} className="w-full bg-[#F7F8F9] outline-none border-none text-[14px] font-light" autoFocus />
                                 </div>
@@ -195,9 +194,11 @@ export function ClaimDrawer({
                                     }} className="w-1/2 cursor-pointer bg-[#f0f2f4] rounded-2xl flex justify-center px-2 py-2">
                                         <span className="text-[18px] font-medium ">Back</span>
                                     </div>
-                                    <div onClick={() => handleEnterAddressNext(enteredAddress)} className="w-1/2 bg-[#4eaffe] cursor-pointer rounded-2xl flex justify-center px-2 py-2">
-                                        <span className="text-[18px] text-white font-medium">Next</span>
-                                    </div>
+                                    <Drawer.Close className="w-1/2">
+                                        <div onClick={handleEnterAddressNext} className="w-full bg-[#4eaffe] cursor-pointer rounded-2xl flex justify-center px-2 py-2">
+                                            <span className="text-[18px] text-white font-medium">Confirm</span>
+                                        </div>
+                                    </Drawer.Close>
                                 </div>
                             </div>
                         </div>
@@ -249,7 +250,7 @@ export function ClaimDrawer({
                             </div>
                             :
                             <Drawer.Close className="w-1/2">
-                                <div onClick={confirmTransfer} className={`w-full bg-[#4eaffe] rounded-2xl flex justify-center px-2 py-2 ${selectedChain === 0 ? 'cursor-not-allowed': 'cursor-pointer'}`}>
+                                <div className={`w-full bg-[#4eaffe] rounded-2xl flex justify-center px-2 py-2 ${selectedChain === 0 ? 'cursor-not-allowed': 'cursor-pointer'}`}>
                                     <span className="text-[18px] text-white font-medium">Confirm</span>
                                 </div>
                             </Drawer.Close>

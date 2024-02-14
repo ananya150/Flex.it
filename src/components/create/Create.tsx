@@ -155,7 +155,7 @@ const CreateLink = () => {
 
         setLoading(true);
 
-        if(parseFloat(amount) > parseFloat(balance)){
+        if(parseFloat(amount) > parseFloat(balance) || amount === ''){
             invalidAmountToast()
             setLoading(false)             
             return;
@@ -245,37 +245,8 @@ const CreateLink = () => {
     }
 
     const invalidAmountToast = () => {
-        toast.custom((t: any) => (
-            <div
-              className={`${
-                t.visible ? 'animate-enter' : 'animate-leave'
-              } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
-            >
-              <div className="flex-1 w-0 p-4">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 pt-0.5">
-                    <AlertCircle className='text-yellow-700' />
-                  </div>
-                  <div className="ml-3 flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      Invalid Amount
-                    </p>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Max {balance}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex border-l border-gray-200">
-                <button
-                  onClick={() => toast.dismiss(t.id)}
-                  className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  Dismiss
-                </button>
-              </div>
-            </div>
-          )) 
+
+        toast.error(`Invalid balance. Max ${balance} USDC`)
     }
 
     return (
@@ -366,7 +337,7 @@ const CreateLink = () => {
                             (
                                 loading ?
                                 <div>
-                                    <div onClick={handleButtonClick} className='w-[130px] bg-white h-[45px] mt-[7vh] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-not-allowed flex justify-center items-center' >
+                                    <div className='w-[130px] bg-white h-[45px] mt-[7vh] rounded-lg hover:bg-[#0D0D0D] hover:text-white duration-200 cursor-not-allowed flex justify-center items-center' >
                                         <ReloadIcon className="h-3 w-3 animate-spin mr-6" />
                                         <span className='font-medium transition-[1s] text-[15px]'>Waiting</span>
                                     </div>

@@ -17,6 +17,9 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@tanstack/react-query": "^5.18.1",
     "@upstash/redis": "^1.28.3",
+    "@web3auth/base": "^7.3.2",
+    "@web3auth/ethereum-provider": "^7.3.2",
+    "@web3auth/single-factor-auth": "^7.3.0",
     "aws-sdk": "^2.1553.0",
     "axios": "^1.6.7",
     "bip39": "^3.1.0",
@@ -26,6 +29,7 @@
     "connectkit": "1.6.0",
     "ethereumjs-wallet": "^1.0.2",
     "ethers": "^5.7.1",
+    "firebase": "^10.8.0",
     "framer-motion": "^11.0.3",
     "gsap": "^3.12.5",
     "libsodium-wrappers-sumo": "^0.7.13",
@@ -47,7 +51,8 @@
     "userop": "^0.3.8",
     "vaul": "^0.9.0",
     "viem": "^1.21.4",
-    "wagmi": "^1.4.13"
+    "wagmi": "^1.4.13",
+    "web3": "^4.4.0"
   },
   "devDependencies": {
     "@types/libsodium-wrappers-sumo": "^0.7.8",
