@@ -30,13 +30,13 @@ const Navbar = () => {
 
   return (
         <div className='flex w-[100%] justify-center'>
-            <div style={{transition: 'top 0.4s'}} className={`fixed w-[92%] bg-[#0D0D0D] ${isVisible ? 'top-5': 'top-[-100px]'} h-[85px] rounded-[3rem] border-[#1D1D1D] border flex flex-col justify-center px-12 z-10 `}>
+            <div style={{transition: 'top 0.4s'}} className={`fixed bg-[#0D0D0D] ${isVisible ? 'top-5': 'top-[-100px]'} w-[92%] bg-[#0D0D0D] h-[10vh] rounded-[3rem] border-[#1D1D1D] border flex flex-col justify-center sm:px-12 px-8 z-10 `}>
                 <div className='w-full flex justify-between items-center'>
                     <div className='flex items-center space-x-2'>
-                        <Link className='text-white w-7 h-7' />
+                        <Link className='text-white w-7 h-7 ' />
                         <span className='font-bold text-white text-[32px] font-sat'>flex.it</span>
                     </div>
-                    <div className='flex items-center space-x-16'>
+                    <div className='flex items-center space-x-16 sm:block hidden'>
                         <span className='text-white text-[18px] font-sat font-medium'>Home</span>
                         <span className='text-white text-[18px] font-sat font-medium'>Blog</span>
                         <span className='text-white text-[18px] font-sat font-medium'>FAQ</span>

@@ -4,17 +4,18 @@ import styles from './page.module.scss'
 import Image from 'next/image';
 import { useRef } from 'react';
 import gsap from 'gsap';
-import { Link } from 'lucide-react';
+import { LinkIcon } from 'lucide-react';
 import { motion, useScroll } from "framer-motion";
-
+import {useRouter} from 'next/navigation';
 import { i1, i2, i3, i4, i5, i6 } from './data';
 
 const Heading = () => {
 
     const plane1 = useRef(null);
     const plane2 = useRef(null);
-    const [animationComplete, setAnimationComplete] = useState(false)
+    const [animationComplete, setAnimationComplete] = useState(false);
 
+    const router = useRouter();
     
     let requestAnimationFrameId: any = null;
     let xForce = 0;
@@ -115,7 +116,7 @@ const Heading = () => {
               duration: 1,
             }}
           className='flex items-center space-x-2 w-full justify-center'>
-            <Link className='text-white w-7 h-7' />
+            <LinkIcon className='text-white w-7 h-7' />
             <span className='font-bold text-white text-[32px] font-sat'>flex.it</span>
         </motion.div>
         <div className='flex flex-col items-center '>
@@ -126,6 +127,7 @@ const Heading = () => {
           <motion.div 
             initial={{ opacity: 0}}
             animate={{ opacity: 1}}
+            onClick={() => {router.push('/create')}}
             transition={{
               delay: 1,
               duration: 1.5,

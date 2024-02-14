@@ -14,10 +14,10 @@ export default function Home() {
       </div>
       <Hero />
       <ScrollSection />
-      <Working />
+      {/* <Working />
       <div className="h-[100vh] bg-[#0D0D0D] flex flex-col justify-center items-center">
         <span className="text-white text-[30px]">Footer</span>
-      </div>
+      </div> */}
     </div>
   )
 }
