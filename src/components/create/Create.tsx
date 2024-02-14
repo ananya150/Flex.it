@@ -147,7 +147,7 @@ const CreateLink = () => {
     }
 
     const copy = () => {
-        navigator.clipboard.writeText(`http://localhost:3000/claim/${hashLink}`);
+        navigator.clipboard.writeText(`https://flex-it-tawny.vercel.app/claim/${hashLink}`);
         toast.success('Copied')
       }
 
@@ -259,10 +259,10 @@ const CreateLink = () => {
                     </div>
                          <div className='flex flex-col items-center mt-[10vh]'>
                             <div className='bg-white p-3'>
-                                <QRCode value={`http://localhost:3000/claim/${hashLink}`} className='w-[120px] h-[120px]' />
+                                <QRCode value={`https://flex-it-tawny.vercel.app/claim/${hashLink}`} className='w-[120px] h-[120px]' />
                             </div>
                              <div className='flex items-center space-x-2 mt-[7vh]'>
-                                 <div className='bg-zinc-800 text-white  px-4 py-2 rounded-xl text-[12px] sm:text-[15px] font-semibold font-sat'>http://localhost:3000/claim/{hashLink}</div>
+                                 <div className='bg-zinc-800 text-white  px-4 py-2 rounded-xl text-[12px] sm:text-[15px] font-semibold font-sat'>https://flex-it-tawny.vercel.app/claim/{hashLink}</div>
                              </div>
                              <div className='mt-[3vh] flex justify-between w-[200px]'>
                                 <div onClick={copy} className='flex items-center space-x-2 cursor-pointer'>

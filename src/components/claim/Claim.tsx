@@ -61,7 +61,7 @@ const Claim = ({data, address, link}: {data: any, address: any, link: any}) => {
                 {
                     claimed ?
                     <div className='mt-[5vh]'>
-                        <span className='text-white sm:text-[26px] text-[15px] text-center font-sat font-bold'>Link successfully claimed! Check the transaction </span> <Link href={`https://base-sepolia.blockscout.com/tx/${txHash}`} target='_blank' className='text-white sm:text-[26px] text-[15px] font-sat font-bold'><u>here</u></Link>
+                        <span className='text-white sm:text-[26px] text-[15px] text-center font-sat font-bold'>Link successfully claimed! Check the transaction </span> <Link href={`https://basescan.org/tx/${txHash}`} target='_blank' className='text-white sm:text-[26px] text-[15px] font-sat font-bold'><u>here</u></Link>
                     </div>
                     :
                     <ClaimDrawer data={data} hash={link} setClaimed={setClaimed} setTxHash={setTxHash}>
